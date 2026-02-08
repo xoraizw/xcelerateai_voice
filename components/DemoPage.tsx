@@ -152,6 +152,7 @@ export default function DemoPage({ demo }: DemoPageProps) {
           provider: "11labs",
           voiceId: "21m00Tcm4TlvDq8ikWAM", // Rachel voice
         },
+        firstMessage: "Hello! How can I help you today?",
       });
     } catch (error) {
       console.error("Failed to start call:", error);

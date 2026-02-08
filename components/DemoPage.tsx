@@ -32,7 +32,19 @@ export default function DemoPage({ demo }: DemoPageProps) {
   const [callDuration, setCallDuration] = useState(0);
   const [error, setError] = useState<string | null>(null);
   const [transcript, setTranscript] = useState<TranscriptMessage[]>([]);
+  const [callsRemaining, setCallsRemaining] = useState(2);
   const transcriptEndRef = useRef<HTMLDivElement>(null);
+  const callStartTimeRef = useRef<number | null>(null);
+
+  // Load call attempts from localStorage
+  useEffect(() => {
+    const storageKey = `demo_calls_${demo.publicId}`;
+    const stored = localStorage.getItem(storageKey);
+    if (stored) {
+      const callCount = parseInt(stored, 10);
+      setCallsRemaining(Math.max(0, 2 - callCount));
+    }
+  }, [demo.publicId]);
 
   useEffect(() => {
     // Initialize VAPI
@@ -50,7 +62,14 @@ export default function DemoPage({ demo }: DemoPageProps) {
     vapiInstance.on("call-start", () => {
       setIsCallActive(true);
       setIsConnecting(false);
+      callStartTimeRef.current = Date.now();
       toast.success("Call connected!");
+      
+      // Increment call count in localStorage
+      const storageKey = `demo_calls_${demo.publicId}`;
+      const currentCount = parseInt(localStorage.getItem(storageKey) || "0", 10);
+      localStorage.setItem(storageKey, String(currentCount + 1));
+      setCallsRemaining(Math.max(0, 2 - (currentCount + 1)));
     });
 
     vapiInstance.on("call-end", () => {
@@ -58,6 +77,7 @@ export default function DemoPage({ demo }: DemoPageProps) {
       setIsConnecting(false);
       setIsSpeaking(false);
       setCallDuration(0);
+      callStartTimeRef.current = null;
       toast.success("Call ended");
     });
 
@@ -109,19 +129,31 @@ export default function DemoPage({ demo }: DemoPageProps) {
         vapiInstance.stop();
       }
     };
-  }, []);
+  }, [demo.publicId]);
 
   useEffect(() => {
     let interval: NodeJS.Timeout;
     if (isCallActive) {
       interval = setInterval(() => {
-        setCallDuration((prev) => prev + 1);
+        setCallDuration((prev) => {
+          const newDuration = prev + 1;
+          
+          // Auto-end call after 60 seconds
+          if (newDuration >= 60) {
+            if (vapi) {
+              vapi.stop();
+              toast.error("Call ended - 1 minute limit reached");
+            }
+          }
+          
+          return newDuration;
+        });
       }, 1000);
     }
     return () => {
       if (interval) clearInterval(interval);
     };
-  }, [isCallActive]);
+  }, [isCallActive, vapi]);
 
   // Auto-scroll transcript to bottom
   useEffect(() => {
@@ -131,6 +163,11 @@ export default function DemoPage({ demo }: DemoPageProps) {
   const startCall = async () => {
     if (!vapi) {
       toast.error("VAPI not initialized");
+      return;
+    }
+
+    if (callsRemaining <= 0) {
+      toast.error("You've reached the maximum number of trial calls (2) for this demo.");
       return;
     }
 
@@ -217,9 +254,21 @@ export default function DemoPage({ demo }: DemoPageProps) {
             <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
               {demo.name}
             </h2>
-            <p className="text-gray-600 dark:text-gray-400 mb-6">
+            <p className="text-gray-600 dark:text-gray-400 mb-4">
               Click the button below to start talking with the AI agent
             </p>
+
+            {/* Trial Limits Info */}
+            <div className="mb-6 p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
+              <h3 className="text-sm font-semibold text-blue-900 dark:text-blue-100 mb-2">
+                Trial Limitations
+              </h3>
+              <ul className="text-sm text-blue-800 dark:text-blue-200 space-y-1">
+                <li>• Maximum 2 calls per demo</li>
+                <li>• Each call limited to 1 minute</li>
+                <li>• Calls remaining: <span className="font-bold">{callsRemaining}</span></li>
+              </ul>
+            </div>
 
             {error && (
               <div className="mb-6 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg flex items-start gap-3">
@@ -239,9 +288,14 @@ export default function DemoPage({ demo }: DemoPageProps) {
                         Call Active
                       </span>
                     </div>
-                    <span className="text-green-800 dark:text-green-200 font-mono">
-                      {formatDuration(callDuration)}
-                    </span>
+                    <div className="text-right">
+                      <span className="text-green-800 dark:text-green-200 font-mono block">
+                        {formatDuration(callDuration)}
+                      </span>
+                      <span className="text-xs text-green-700 dark:text-green-300">
+                        {60 - callDuration}s remaining
+                      </span>
+                    </div>
                   </div>
                   {isSpeaking && (
                     <div className="flex items-center gap-2 mt-3">
@@ -258,7 +312,7 @@ export default function DemoPage({ demo }: DemoPageProps) {
               {!isCallActive ? (
                 <button
                   onClick={startCall}
-                  disabled={isConnecting || !!error}
+                  disabled={isConnecting || !!error || callsRemaining <= 0}
                   className="group relative w-40 h-40 bg-gradient-to-br from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 disabled:from-gray-400 disabled:to-gray-500 rounded-full shadow-2xl transition-all transform hover:scale-105 disabled:scale-100 disabled:cursor-not-allowed"
                 >
                   <div className="absolute inset-0 rounded-full bg-white opacity-0 group-hover:opacity-20 transition-opacity"></div>
@@ -268,7 +322,7 @@ export default function DemoPage({ demo }: DemoPageProps) {
                     <Phone className="w-16 h-16 text-white mx-auto" />
                   )}
                   <span className="block text-white font-semibold mt-2">
-                    {isConnecting ? "Connecting..." : "Start Call"}
+                    {isConnecting ? "Connecting..." : callsRemaining <= 0 ? "No Calls Left" : "Start Call"}
                   </span>
                 </button>
               ) : (

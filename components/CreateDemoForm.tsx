@@ -11,6 +11,7 @@ interface CreateDemoFormProps {
 export default function CreateDemoForm({ onDemoCreated }: CreateDemoFormProps) {
   const [name, setName] = useState("");
   const [prompt, setPrompt] = useState("");
+  const [firstMessage, setFirstMessage] = useState("");
   const [loading, setLoading] = useState(false);
   const [generatedLink, setGeneratedLink] = useState("");
 
@@ -30,7 +31,7 @@ export default function CreateDemoForm({ onDemoCreated }: CreateDemoFormProps) {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ name, prompt }),
+        body: JSON.stringify({ name, prompt, firstMessage: firstMessage.trim() || undefined }),
       });
 
       if (!response.ok) {
@@ -62,6 +63,7 @@ export default function CreateDemoForm({ onDemoCreated }: CreateDemoFormProps) {
   const resetForm = () => {
     setName("");
     setPrompt("");
+    setFirstMessage("");
     setGeneratedLink("");
   };
 
@@ -148,6 +150,26 @@ export default function CreateDemoForm({ onDemoCreated }: CreateDemoFormProps) {
         />
         <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">
           This prompt defines how your AI agent will behave during calls.
+        </p>
+      </div>
+
+      <div>
+        <label
+          htmlFor="firstMessage"
+          className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+        >
+          First Message (Optional)
+        </label>
+        <input
+          type="text"
+          id="firstMessage"
+          value={firstMessage}
+          onChange={(e) => setFirstMessage(e.target.value)}
+          placeholder="e.g., Hi! I'm your sales assistant. What brings you here today?"
+          className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
+        />
+        <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">
+          Leave blank for default: "Hello! How can I help you today?"
         </p>
       </div>
 

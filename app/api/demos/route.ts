@@ -6,7 +6,7 @@ import { generatePublicId } from "@/lib/utils";
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { name, prompt, apiKey, vapiConfig } = body;
+    const { name, prompt, firstMessage, apiKey, vapiConfig } = body;
 
     if (!name || !prompt) {
       return NextResponse.json(
@@ -21,6 +21,7 @@ export async function POST(request: NextRequest) {
       data: {
         name,
         prompt,
+        firstMessage,
         publicId,
         apiKey,
         vapiConfig,

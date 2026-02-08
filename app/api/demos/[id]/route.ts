@@ -38,7 +38,7 @@ export async function PUT(
   try {
     const { id } = await params;
     const body = await request.json();
-    const { name, prompt } = body;
+    const { name, prompt, firstMessage } = body;
 
     if (!name || !prompt) {
       return NextResponse.json(
@@ -52,6 +52,7 @@ export async function PUT(
       data: {
         name,
         prompt,
+        firstMessage,
       },
     });
 

@@ -10,6 +10,7 @@ interface Demo {
   id: string;
   name: string;
   prompt: string;
+  firstMessage?: string | null;
   publicId: string;
 }
 
@@ -152,7 +153,7 @@ export default function DemoPage({ demo }: DemoPageProps) {
           provider: "11labs",
           voiceId: "21m00Tcm4TlvDq8ikWAM", // Rachel voice
         },
-        firstMessage: "Hello! How can I help you today?",
+        firstMessage: demo.firstMessage || "Hello! How can I help you today?",
         transcriber: {
           provider: "deepgram",
           model: "nova-2",

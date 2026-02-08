@@ -153,6 +153,19 @@ export default function DemoPage({ demo }: DemoPageProps) {
           voiceId: "21m00Tcm4TlvDq8ikWAM", // Rachel voice
         },
         firstMessage: "Hello! How can I help you today?",
+        transcriber: {
+          provider: "deepgram",
+          model: "nova-2",
+          language: "en-US",
+        },
+        clientMessages: [
+          "transcript",
+          "hang",
+          "function-call",
+          "speech-update",
+          "metadata",
+          "conversation-update",
+        ],
       });
     } catch (error) {
       console.error("Failed to start call:", error);

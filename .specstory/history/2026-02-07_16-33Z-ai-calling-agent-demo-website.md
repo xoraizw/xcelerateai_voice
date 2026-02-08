@@ -5562,3 +5562,272 @@ I'll implement global play tracking per demo. Each demo gets 2 total plays acros
 
 ---
 
+<tool-use data-tool-type="write" data-tool-name="edit_file_v2">
+
+<details><summary>Tool use: **edit_file_v2** • Edit file: c:\Users\Tech Planet 3rd 84a\Desktop\xcelerateai-mvps\calling-agent-demo\components\DemoPage.tsx</summary>
+
+</details>
+
+</tool-use>
+
+---
+
+<tool-use data-tool-type="write" data-tool-name="edit_file_v2">
+
+<details><summary>Tool use: **edit_file_v2** • Edit file: c:\Users\Tech Planet 3rd 84a\Desktop\xcelerateai-mvps\calling-agent-demo\components\DemoPage.tsx</summary>
+
+</details>
+
+</tool-use>
+
+---
+
+<tool-use data-tool-type="write" data-tool-name="edit_file_v2">
+
+<details><summary>Tool use: **edit_file_v2** • Edit file: c:\Users\Tech Planet 3rd 84a\Desktop\xcelerateai-mvps\calling-agent-demo\components\DemoPage.tsx</summary>
+
+</details>
+
+</tool-use>
+
+---
+
+<tool-use data-tool-type="write" data-tool-name="edit_file_v2">
+
+<details><summary>Tool use: **edit_file_v2** • Edit file: c:\Users\Tech Planet 3rd 84a\Desktop\xcelerateai-mvps\calling-agent-demo\components\DemoPage.tsx</summary>
+
+</details>
+
+</tool-use>
+
+---
+
+<tool-use data-tool-type="write" data-tool-name="edit_file_v2">
+
+<details><summary>Tool use: **edit_file_v2** • Edit file: c:\Users\Tech Planet 3rd 84a\Desktop\xcelerateai-mvps\calling-agent-demo\components\DemoPage.tsx</summary>
+
+</details>
+
+</tool-use>
+
+---
+
+### 4. Create Migration for Database
+
+---
+
+<tool-use data-tool-type="shell" data-tool-name="run_terminal_command_v2">
+<details><summary>Tool use: **run_terminal_command_v2** • Run command: New-Item -ItemType Directory -Path "prisma\migrations\20260208_add_play_count" -Force</summary>
+
+```bash
+New-Item -ItemType Directory -Path "prisma\migrations\20260208_add_play_count" -Force
+```
+
+```
+
+
+    Directory: C:\Users\Tech Planet 3rd 84a\Desktop\xcelerateai-mvps\calling-agent-demo\prisma\migrations
+
+
+Mode                 LastWriteTime         Length Name                                                                 
+----                 -------------         ------ ----                                                                 
+d-----          2/8/2026  11:58 PM                20260208_add_play_count                                              
+
+```
+</details>
+</tool-use>
+
+---
+
+<tool-use data-tool-type="write" data-tool-name="edit_file_v2">
+
+<details><summary>Tool use: **edit_file_v2** • Edit file: c:\Users\Tech Planet 3rd 84a\Desktop\xcelerateai-mvps\calling-agent-demo\prisma\migrations\20260208_add_play_count\migration.sql</summary>
+
+</details>
+
+</tool-use>
+
+---
+
+### 5. Commit and Push Changes
+
+---
+
+<tool-use data-tool-type="shell" data-tool-name="run_terminal_command_v2">
+<details><summary>Tool use: **run_terminal_command_v2** • Run command: git add -A</summary>
+
+```bash
+git add -A
+```
+</details>
+</tool-use>
+
+---
+
+<tool-use data-tool-type="shell" data-tool-name="run_terminal_command_v2">
+<details><summary>Tool use: **run_terminal_command_v2** • Run command: git status</summary>
+
+```bash
+git status
+```
+
+```
+On branch main
+Your branch is up to date with 'origin/main'.
+
+Changes to be committed:
+  (use "git restore --staged &lt;file&gt;..." to unstage)
+	modified:   .specstory/history/2026-02-07_16-33Z-ai-calling-agent-demo-website.md
+	new file:   app/api/demos/play/[publicId]/route.ts
+	modified:   components/DemoPage.tsx
+	new file:   prisma/migrations/20260208_add_play_count/migration.sql
+	modified:   prisma/schema.prisma
+
+
+```
+</details>
+</tool-use>
+
+---
+
+<tool-use data-tool-type="shell" data-tool-name="run_terminal_command_v2">
+<details><summary>Tool use: **run_terminal_command_v2** • Run command: git commit --trailer "Co-authored-by: Cursor <cursoragent@cursor.com>" -m "Implement global play tracking per demo in database"</summary>
+
+```bash
+git commit --trailer "Co-authored-by: Cursor <cursoragent@cursor.com>" -m "Implement global play tracking per demo in database"
+```
+
+```
+[main abdf316] Implement global play tracking per demo in database
+ 5 files changed, 1939 insertions(+), 91 deletions(-)
+ create mode 100644 app/api/demos/play/[publicId]/route.ts
+ create mode 100644 prisma/migrations/20260208_add_play_count/migration.sql
+
+```
+</details>
+</tool-use>
+
+---
+
+<tool-use data-tool-type="shell" data-tool-name="run_terminal_command_v2">
+<details><summary>Tool use: **run_terminal_command_v2** • Run command: git push</summary>
+
+```bash
+git push
+```
+
+```
+remote: This repository moved. Please use the new location:        
+remote:   https://github.com/xoraizw/xcelerateai_voice.git        
+To https://github.com/xoraizw/xcelerateai-voice.git
+   f513a53..abdf316  main -&gt; main
+
+```
+</details>
+</tool-use>
+
+---
+
+Perfect! All changes pushed. Here's what I implemented:
+
+## ✅ Global Play Tracking System
+
+### **How It Works:**
+
+1. **Database Storage**
+   - `playCount`: Tracks total plays (starts at 0)
+   - `maxPlays`: Maximum allowed plays (default: 2)
+   - Stored per demo in PostgreSQL
+
+2. **Flow:**
+   ```
+   User clicks "Start Call"
+   ↓
+   Frontend calls POST /api/demos/play/{publicId}
+   ↓
+   Server checks: playCount < maxPlays?
+   ↓
+   If YES: Increment playCount, return success
+   If NO: Return 403 error
+   ↓
+   Frontend starts VAPI call only if allowed
+   ```
+
+3. **Server-Side Protection**
+   - Play count incremented BEFORE VAPI call starts
+   - Works across all devices, browsers, users globally
+   - Cannot be bypassed from client-side
+
+### **What Changed:**
+
+✅ **Database Schema** - Added `playCount` and `maxPlays` columns  
+✅ **New API Endpoint** - `/api/demos/play/{publicId}` (GET/POST)  
+✅ **DemoPage Component** - Replaced localStorage with API calls  
+✅ **Migration Created** - Will run on Vercel deployment  
+
+### **After Vercel Deploys:**
+
+- Each demo link gets exactly 2 plays total (across everyone)
+- After 2 plays, the demo is permanently locked
+- Display shows: "Plays remaining: 0"
+- Button disabled: "No Plays Left"
+
+### **To Reset a Demo's Play Count:**
+
+You can manually update in database or create an admin endpoint:
+
+```sql
+UPDATE "Demo" SET "playCount" = 0 WHERE "publicId" = 'abc123';
+```
+
+Or I can add a reset button to the dashboard if you want?
+
+---
+
+_**User**_
+
+add a reset button from dashboard too.
+And tell me if i need to update anything from database side?
+push changes so that they reflect in website as well.
+
+---
+
+_**Agent (model claude-4.5-sonnet-thinking, mode Agent)**_
+
+<think><details><summary>Thought Process</summary>
+The user wants:
+1. Add a reset button to the dashboard to reset play counts
+2. Tell them if they need to update anything in the database
+3. Push changes so they reflect on the website
+
+Let me:
+1. Find the DemoDashboard component
+2. Add a reset button that calls an API endpoint
+3. Create the API endpoint to reset play count
+4. Push all changes
+
+For database side: The migration will automatically run when they deploy to Vercel using `prisma db push`. They don't need to do anything manually.</details></think>
+
+---
+
+I'll add a reset button to the dashboard and explain the database update process.
+
+## 1. First, let me find the DemoDashboard component:
+
+---
+
+<tool-use data-tool-type="generic" data-tool-name="glob_file_search">
+<details>
+<summary>Tool use: **glob_file_search** • Searched codebase "undefined" • **1** result in **1** directory</summary>
+
+Directory: **undefined** (1 file)
+
+| File |
+|------|
+| `.\components\DemoDashboard.tsx` |
+
+</details>
+</tool-use>
+
+---
+

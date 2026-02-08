@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useImperativeHandle, forwardRef } from "react";
-import { Trash2, ExternalLink, Edit2, Copy, Loader2 } from "lucide-react";
+import { Trash2, ExternalLink, Edit2, Copy, Loader2, RotateCcw } from "lucide-react";
 import toast from "react-hot-toast";
 
 interface Demo {
@@ -9,6 +9,8 @@ interface Demo {
   name: string;
   prompt: string;
   publicId: string;
+  playCount: number;
+  maxPlays: number;
   createdAt: string;
 }
 
@@ -107,6 +109,24 @@ const DemoDashboard = forwardRef<DemoDashboardHandle>((props, ref) => {
     window.open(`/demo/${publicId}`, "_blank");
   };
 
+  const handleResetPlayCount = async (id: string, demoName: string) => {
+    if (!confirm(`Reset play count for "${demoName}"? This will allow 2 more plays.`)) return;
+
+    try {
+      const response = await fetch(`/api/demos/${id}/reset-plays`, {
+        method: "POST",
+      });
+
+      if (!response.ok) throw new Error("Failed to reset play count");
+
+      toast.success("Play count reset successfully");
+      fetchDemos(); // Refresh to show updated count
+    } catch (error) {
+      console.error("Failed to reset play count:", error);
+      toast.error("Failed to reset play count");
+    }
+  };
+
   if (loading) {
     return (
       <div className="flex justify-center items-center py-12">
@@ -178,6 +198,17 @@ const DemoDashboard = forwardRef<DemoDashboardHandle>((props, ref) => {
                     <p className="text-sm text-gray-500 dark:text-gray-400">
                       Created: {new Date(demo.createdAt).toLocaleDateString()}
                     </p>
+                    <p className="text-sm mt-1">
+                      <span className="text-gray-600 dark:text-gray-400">Plays: </span>
+                      <span className={`font-semibold ${demo.playCount >= demo.maxPlays ? 'text-red-600 dark:text-red-400' : 'text-green-600 dark:text-green-400'}`}>
+                        {demo.playCount}/{demo.maxPlays}
+                      </span>
+                      {demo.playCount >= demo.maxPlays && (
+                        <span className="ml-2 text-xs px-2 py-0.5 bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300 rounded-full">
+                          Exhausted
+                        </span>
+                      )}
+                    </p>
                   </div>
                 </div>
 
@@ -208,6 +239,14 @@ const DemoDashboard = forwardRef<DemoDashboardHandle>((props, ref) => {
                   >
                     <Edit2 className="w-4 h-4" />
                     Edit
+                  </button>
+                  <button
+                    onClick={() => handleResetPlayCount(demo.id, demo.name)}
+                    className="flex items-center gap-2 px-4 py-2 bg-orange-600 hover:bg-orange-700 text-white rounded-lg transition-colors text-sm"
+                    title="Reset play count to 0"
+                  >
+                    <RotateCcw className="w-4 h-4" />
+                    Reset Plays
                   </button>
                   <button
                     onClick={() => handleDelete(demo.id)}

@@ -3217,3 +3217,188 @@ I've created a complete guide in `DEPLOYMENT.md` with more details!
 
 ---
 
+_**User**_
+
+vercel saying this
+
+error:
+The name contains invalid characters. Only letters, digits, and underscores are allowed. Furthermore, the name should not start with a digit.
+
+---
+
+_**Agent (model claude-4.5-sonnet-thinking, mode Agent)**_
+
+<think><details><summary>Thought Process</summary>
+The user is getting an error from Vercel about invalid characters in a name. This is likely related to the project name or repository name. The error says "Only letters, digits, and underscores are allowed. Furthermore, the name should not start with a digit."
+
+Looking at the deployment guide I provided, I suggested naming the GitHub repo "calling-agent-demo" which contains a hyphen (-). This is likely causing the issue. Vercel doesn't allow hyphens in project names in some contexts.
+
+The user needs to either:
+1. Rename the project/repo to use underscores instead of hyphens
+2. Or use a name without special characters
+
+Let me help them fix this.</details></think>
+
+---
+
+The error is because **hyphens (-)** aren't allowed in the project name. Let's fix it!
+
+## 🔧 **Quick Fix:**
+
+When importing in Vercel, **change the project name** to use underscores or remove special characters:
+
+### **Option 1: Use Underscores (Recommended)**
+Change: `calling-agent-demo`  
+To: `calling_agent_demo`
+
+### **Option 2: Remove Special Characters**
+Change: `calling-agent-demo`  
+To: `callingagentdemo`
+
+---
+
+## 📝 **Where to Change It:**
+
+**In Vercel during import:**
+1. When you see the "Import Project" screen
+2. Look for the **"Project Name"** field
+3. Change it to: `calling_agent_demo` or `callingagentdemo`
+4. Then continue with adding environment variables
+
+**Note:** Your GitHub repo name can stay as `calling-agent-demo` - that's fine! Only the Vercel project name needs to change.
+
+---
+
+## 🎯 **Continue from here:**
+
+1. **Change the project name** to `calling_agent_demo`
+2. Add your 3 environment variables (same as before)
+3. Click Deploy
+
+That should fix it! Let me know if you hit any other issues. 🚀
+
+---
+
+_**User**_
+
+deployment failed
+15:58:36.827 Running build in Washington, D.C., USA (East) – iad1
+15:58:36.827 Build machine configuration: 2 cores, 8 GB
+15:58:36.961 Cloning github.com/xoraizw/xcelerateai_voice (Branch: main, Commit: c18c17b)
+15:58:36.962 Previous build caches not available.
+15:58:37.190 Cloning completed: 229.000ms
+15:58:39.027 Running "vercel build"
+15:58:39.989 Vercel CLI 50.11.0
+15:58:40.267 Installing dependencies...
+15:58:55.418 npm warn deprecated next@15.1.6: This version has a security vulnerability. Please upgrade to a patched version. See https://nextjs.org/blog/CVE-2025-66478 for more details.
+15:59:00.856 
+15:59:00.857 > calling-agent-demo@0.1.0 postinstall
+15:59:00.858 > prisma generate
+15:59:00.858 
+15:59:01.824 Prisma schema loaded from prisma/schema.prisma
+15:59:01.970 ┌─────────────────────────────────────────────────────────┐
+15:59:01.971 │  Update available 6.19.2 -> 7.3.0                       │
+15:59:01.971 │                                                         │
+15:59:01.972 │  This is a major update - please follow the guide at    │
+15:59:01.973 │  https://pris.ly/d/major-version-upgrade                │
+15:59:01.973 │                                                         │
+15:59:01.973 │  Run the following to update                            │
+15:59:01.973 │    npm i --save-dev prisma@latest                       │
+15:59:01.974 │    npm i @prisma/client@latest                          │
+15:59:01.974 └─────────────────────────────────────────────────────────┘
+15:59:01.974 
+15:59:01.974 ✔ Generated Prisma Client (v6.19.2) to ./node_modules/@prisma/client in 41ms
+15:59:01.975 
+15:59:01.975 Start by importing your Prisma Client (See: https://pris.ly/d/importing-client)
+15:59:01.975 
+15:59:01.975 Tip: Need your database queries to be 1000x faster? Accelerate offers you that and more: https://pris.ly/tip-2-accelerate
+15:59:01.975 
+15:59:01.997 
+15:59:01.998 added 412 packages in 21s
+15:59:01.998 
+15:59:01.998 151 packages are looking for funding
+15:59:01.998   run `npm fund` for details
+15:59:02.040 Detected Next.js version: 15.1.6
+15:59:02.044 Running "npm run build"
+15:59:02.142 
+15:59:02.142 > calling-agent-demo@0.1.0 build
+15:59:02.142 > next build
+15:59:02.142 
+15:59:02.692 Attention: Next.js now collects completely anonymous telemetry regarding usage.
+15:59:02.694 This information is used to shape Next.js' roadmap and prioritize features.
+15:59:02.694 You can learn more, including how to opt-out if you'd not like to participate in this anonymous program, by visiting the following URL:
+15:59:02.695 https://nextjs.org/telemetry
+15:59:02.695 
+15:59:02.756    ▲ Next.js 15.1.6
+15:59:02.757    - Environments: .env.production
+15:59:02.757 
+15:59:02.775    Creating an optimized production build ...
+15:59:12.814  ✓ Compiled successfully
+15:59:12.817    Skipping linting
+15:59:12.817    Checking validity of types ...
+15:59:16.134    Collecting page data ...
+15:59:18.655    Generating static pages (0/5) ...
+15:59:19.591    Generating static pages (1/5) 
+15:59:19.592    Generating static pages (2/5) 
+15:59:19.593    Generating static pages (3/5) 
+15:59:19.593  ✓ Generating static pages (5/5)
+15:59:19.952    Finalizing page optimization ...
+15:59:19.956    Collecting build traces ...
+15:59:26.258 
+15:59:26.268 Route (app)                              Size     First Load JS
+15:59:26.268 ┌ ○ /                                    7.86 kB         124 kB
+15:59:26.269 ├ ○ /_not-found                          979 B           106 kB
+15:59:26.269 ├ ƒ /api/demos                           143 B           105 kB
+15:59:26.269 ├ ƒ /api/demos/[id]                      143 B           105 kB
+15:59:26.270 └ ƒ /demo/[publicId]                     78.7 kB         195 kB
+15:59:26.270 + First Load JS shared by all            105 kB
+15:59:26.270   ├ chunks/4bd1b696-1ad1ad463156b4fc.js  52.9 kB
+15:59:26.270   ├ chunks/517-2ba309035e227327.js       50.5 kB
+15:59:26.271   └ other shared chunks (total)          1.91 kB
+15:59:26.271 
+15:59:26.271 
+15:59:26.271 ○  (Static)   prerendered as static content
+15:59:26.271 ƒ  (Dynamic)  server-rendered on demand
+15:59:26.272 
+15:59:26.465 Traced Next.js server files in: 122.749ms
+15:59:26.739 Created all serverless functions in: 272.859ms
+15:59:26.751 Collected static files (public/, static/, .next/static): 5.61ms
+15:59:26.817 Build Completed in /vercel/output [47s]
+15:59:27.091 Error: Vulnerable version of Next.js detected, please update immediately. Learn More: https://vercel.link/CVE-2025-66478
+
+completed all other steps
+
+---
+
+_**Agent (model claude-4.5-sonnet-thinking, mode Agent)**_
+
+<think><details><summary>Thought Process</summary>
+The deployment failed because of a security vulnerability in Next.js 15.1.6. We need to update to a patched version. Let me fix this by updating the package.json to use a newer, secure version of Next.js.</details></think>
+
+---
+
+The deployment failed because of a **security vulnerability in Next.js 15.1.6**. We need to update to the patched version. Let me fix this:
+
+---
+
+<tool-use data-tool-type="write" data-tool-name="edit_file_v2">
+
+<details><summary>Tool use: **edit_file_v2** • Edit file: package.json</summary>
+
+</details>
+
+</tool-use>
+
+---
+
+<tool-use data-tool-type="shell" data-tool-name="run_terminal_command_v2">
+<details><summary>Tool use: **run_terminal_command_v2** • Run command: npm install next@latest</summary>
+
+```bash
+npm install next@latest
+```
+</details>
+</tool-use>
+
+---
+

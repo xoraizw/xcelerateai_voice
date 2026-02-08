@@ -158,14 +158,6 @@ export default function DemoPage({ demo }: DemoPageProps) {
           model: "nova-2",
           language: "en-US",
         },
-        clientMessages: [
-          "transcript",
-          "hang",
-          "function-call",
-          "speech-update",
-          "metadata",
-          "conversation-update",
-        ],
       });
     } catch (error) {
       console.error("Failed to start call:", error);

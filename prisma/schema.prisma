@@ -16,6 +16,8 @@ model Demo {
   prompt       String
   firstMessage String?
   publicId     String   @unique
+  playCount    Int      @default(0)
+  maxPlays     Int      @default(2)
   apiKey       String?
   vapiConfig   String?
   createdAt    DateTime @default(now())

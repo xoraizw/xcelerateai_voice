@@ -32,18 +32,28 @@ export default function DemoPage({ demo }: DemoPageProps) {
   const [callDuration, setCallDuration] = useState(0);
   const [error, setError] = useState<string | null>(null);
   const [transcript, setTranscript] = useState<TranscriptMessage[]>([]);
-  const [callsRemaining, setCallsRemaining] = useState(2);
+  const [playsRemaining, setPlaysRemaining] = useState<number | null>(null);
+  const [isLoadingPlayCount, setIsLoadingPlayCount] = useState(true);
   const transcriptEndRef = useRef<HTMLDivElement>(null);
   const callStartTimeRef = useRef<number | null>(null);
 
-  // Load call attempts from localStorage
+  // Load play count from server
   useEffect(() => {
-    const storageKey = `demo_calls_${demo.publicId}`;
-    const stored = localStorage.getItem(storageKey);
-    if (stored) {
-      const callCount = parseInt(stored, 10);
-      setCallsRemaining(Math.max(0, 2 - callCount));
-    }
+    const fetchPlayCount = async () => {
+      try {
+        const response = await fetch(`/api/demos/play/${demo.publicId}`);
+        if (response.ok) {
+          const data = await response.json();
+          setPlaysRemaining(data.playsRemaining);
+        }
+      } catch (error) {
+        console.error("Failed to fetch play count:", error);
+      } finally {
+        setIsLoadingPlayCount(false);
+      }
+    };
+
+    fetchPlayCount();
   }, [demo.publicId]);
 
   useEffect(() => {
@@ -64,12 +74,6 @@ export default function DemoPage({ demo }: DemoPageProps) {
       setIsConnecting(false);
       callStartTimeRef.current = Date.now();
       toast.success("Call connected!");
-      
-      // Increment call count in localStorage
-      const storageKey = `demo_calls_${demo.publicId}`;
-      const currentCount = parseInt(localStorage.getItem(storageKey) || "0", 10);
-      localStorage.setItem(storageKey, String(currentCount + 1));
-      setCallsRemaining(Math.max(0, 2 - (currentCount + 1)));
     });
 
     vapiInstance.on("call-end", () => {
@@ -166,13 +170,35 @@ export default function DemoPage({ demo }: DemoPageProps) {
       return;
     }
 
-    if (callsRemaining <= 0) {
-      toast.error("You've reached the maximum number of trial calls (2) for this demo.");
+    if (playsRemaining !== null && playsRemaining <= 0) {
+      toast.error("This demo has reached its maximum number of plays (2 total).");
       return;
     }
 
     setIsConnecting(true);
     setError(null);
+
+    // Check and increment play count on server
+    try {
+      const playResponse = await fetch(`/api/demos/play/${demo.publicId}`, {
+        method: "POST",
+      });
+
+      if (!playResponse.ok) {
+        const errorData = await playResponse.json();
+        toast.error(errorData.error || "Unable to start call");
+        setIsConnecting(false);
+        return;
+      }
+
+      const playData = await playResponse.json();
+      setPlaysRemaining(playData.playsRemaining);
+    } catch (error) {
+      console.error("Failed to check play count:", error);
+      toast.error("Failed to start call");
+      setIsConnecting(false);
+      return;
+    }
 
     try {
       await vapi.start({
@@ -264,9 +290,11 @@ export default function DemoPage({ demo }: DemoPageProps) {
                 Trial Limitations
               </h3>
               <ul className="text-sm text-blue-800 dark:text-blue-200 space-y-1">
-                <li>• Maximum 2 calls per demo</li>
+                <li>• Maximum 2 total plays for this demo</li>
                 <li>• Each call limited to 1 minute</li>
-                <li>• Calls remaining: <span className="font-bold">{callsRemaining}</span></li>
+                <li>• Plays remaining: <span className="font-bold">
+                  {isLoadingPlayCount ? "..." : playsRemaining !== null ? playsRemaining : "2"}
+                </span></li>
               </ul>
             </div>
 
@@ -312,7 +340,7 @@ export default function DemoPage({ demo }: DemoPageProps) {
               {!isCallActive ? (
                 <button
                   onClick={startCall}
-                  disabled={isConnecting || !!error || callsRemaining <= 0}
+                  disabled={isConnecting || !!error || isLoadingPlayCount || (playsRemaining !== null && playsRemaining <= 0)}
                   className="group relative w-40 h-40 bg-gradient-to-br from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 disabled:from-gray-400 disabled:to-gray-500 rounded-full shadow-2xl transition-all transform hover:scale-105 disabled:scale-100 disabled:cursor-not-allowed"
                 >
                   <div className="absolute inset-0 rounded-full bg-white opacity-0 group-hover:opacity-20 transition-opacity"></div>
@@ -322,7 +350,7 @@ export default function DemoPage({ demo }: DemoPageProps) {
                     <Phone className="w-16 h-16 text-white mx-auto" />
                   )}
                   <span className="block text-white font-semibold mt-2">
-                    {isConnecting ? "Connecting..." : callsRemaining <= 0 ? "No Calls Left" : "Start Call"}
+                    {isConnecting ? "Connecting..." : (playsRemaining !== null && playsRemaining <= 0) ? "No Plays Left" : "Start Call"}
                   </span>
                 </button>
               ) : (
